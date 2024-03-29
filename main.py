@@ -31,14 +31,14 @@ def get_access_token():
     return access_token
  
  
-def get_weather(region):
+def get_weather(city):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
     }
     key = config["weather_key"]
-    region_url = "https://geoapi.qweather.com/v2/city/lookup?location={}&key={}".format(region, key)
-    response = get(region_url, headers=headers).json()
+    city_url = "https://restapi.amap.com/v3/weather/weatherInfo?city={}&key={}".format(city, key)
+    response = get(city_url, headers=headers).json()
     if response["code"] == "404":
         print("推送消息失败，请检查地区名是否有误！")
         os.system("pause")
@@ -48,24 +48,24 @@ def get_weather(region):
         os.system("pause")
         sys.exit(1)
     else:
-        # 获取地区的location--id
-        location_id = response["location"][0]["id"]
-    weather_url = "https://devapi.qweather.com/v7/weather/now?location={}&key={}".format(location_id, key)
+        # 获取地区的city--id
+        city_id = response["city"][0]["id"]
+    weather_url = "https://restapi.amap.com/v3/weather/weatherInfo?city={}&key={}".format(city_id, key)
     response = get(weather_url, headers=headers).json()
     # 天气
-    weather = response["now"]["text"]
+    weather = response["base"]["text"]
     # 当前温度
-    temp = response["now"]["temp"] + u"\N{DEGREE SIGN}" + "C"
+    temp = response["base"]["temp"] + u"\N{DEGREE SIGN}" + "度"
     # 体感温度
-    feelsLike = response["now"]["feelsLike"] + u"\N{DEGREE SIGN}" + "C"
+    feelsLike = response["base"]["feelsLike"] + u"\N{DEGREE SIGN}" + "度"
     # 能见度
-    vis = response["now"]["vis"]+ "Km"
+    vis = response["base"]["vis"]+ "Km"
     # 风向
-    wind_dir = response["now"]["windDir"]
+    wind_dir = response["base"]["windDir"]
     #当前小时累计降水量，默认单位：毫米
-    precip = response["now"]["precip"]+ "毫米"
+    precip = response["base"]["precip"]+ "毫米"
     #大气压强，默认单位：百帕
-    pressure = response["now"]["pressure"] + "百帕"
+    pressure = response["base"]["pressure"] + "百帕"
     return weather, temp, feelsLike, vis, precip, wind_dir, pressure
 
  
@@ -124,7 +124,7 @@ def get_ciba():
     return note_ch, note_en
  
                 # note_ch, note_en
-def send_message(to_user, access_token, region_name, weather, temp, feelsLike, vis, precip, wind_dir, pressure,):
+def send_message(to_user, access_token, city_name, weather, temp, feelsLike, vis, precip, wind_dir, pressure,):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
@@ -154,8 +154,8 @@ def send_message(to_user, access_token, region_name, weather, temp, feelsLike, v
                 "value": "{} {}".format(today, week),
                 "color": get_color()
             },
-            "region": {
-                "value": region_name,
+            "city": {
+                "value": city_name,
                 "color": get_color()
             },
             "weather": {
@@ -248,8 +248,8 @@ if __name__ == "__main__":
     # 接收的用户
     users = config["user"]
     # 传入地区获取天气信息
-    region = config["region"]
-    weather, temp, feelsLike, vis, precip, wind_dir, pressure = get_weather(region)
+    city = config["city"]
+    weather, temp, feelsLike, vis, precip, wind_dir, pressure = get_weather(city)
     note_ch = config["note_ch"]
     note_en = config["note_en"]
     if note_ch == "" and note_en == "":
@@ -258,6 +258,6 @@ if __name__ == "__main__":
 
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, region, weather, temp, feelsLike, vis, precip, wind_dir, pressure,) #note_ch, note_en
+        send_message(user, accessToken, city, weather, temp, feelsLike, vis, precip, wind_dir, pressure,) #note_ch, note_en
     os.system("pause")
 
