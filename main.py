@@ -248,8 +248,8 @@ if __name__ == "__main__":
     # 接收的用户
     users = config["user"]
     # 传入地区获取天气信息
-    province = config["province"]
-    weather, temp, feelsLike, vis, precip, wind_dir, pressure = get_weather(province)
+    region = config["region"]
+    weather, temp, feelsLike, vis, precip, wind_dir, pressure = get_weather(region)
     note_ch = config["note_ch"]
     note_en = config["note_en"]
     if note_ch == "" and note_en == "":
@@ -258,6 +258,6 @@ if __name__ == "__main__":
 
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, province, weather, temp, feelsLike, vis, precip, wind_dir, pressure,) #note_ch, note_en
+        send_message(user, accessToken, region, weather, temp, feelsLike, vis, precip, wind_dir, pressure,) #note_ch, note_en
     os.system("pause")
 
