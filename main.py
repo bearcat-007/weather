@@ -176,7 +176,7 @@ def send_message(to_user, access_token, location_tz,weather,vis,precip,wind_dir,
                 "value": "{} {}".format(today, week),
                 "color": get_color()
             },
-            "region": {
+            "location_tz": {
                 "value": location_tz,
                 "color": get_color()
             },
