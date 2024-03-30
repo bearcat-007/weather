@@ -3,14 +3,12 @@
 模版消息内容复制下方的代码
 
 {{date.DATA}}
-🌍地区：{{region.DATA}}
-⛅天气：{{weather.DATA}}
-🌡️气温：{{temp.DATA}}
-👨体感温度：{{feelsLike.DATA}}
-👀能见度：{{vis.DATA}}
-🌧️当前小时累计降水量：{{precip.DATA}}
-💨风向：{{wind_dir.DATA}}
-☄️大气压强：{{pressure.DATA}}
+地区：{{region.DATA}}
+能见度：{{vis.DATA}}
+紫外线强度：{{uvIndex.DATA}}
+天气：{{weather.DATA}}-{{wind_dir.DATA}}
+气温：{{tempmin.DATA}}-{{tempmax.DATA}}
+日升日落：{{sunrise.DATA}}-{{sunset.DATA}}
 {{birthday1.DATA}} 
 {{birthday2.DATA}}
 今天是我门相识的第{{love_day.DATA}}天
@@ -27,7 +25,7 @@ on:
 jobs:
 #将工作流程中运行的所有作业组合在一起
   build:
-  #定义名为 build 的作业。 
+  #定义名为 build 的作业。 将定义作业的属性 
     runs-on: ubuntu-latest 
     steps:
       - uses: actions/checkout@v2
