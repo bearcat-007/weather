@@ -52,18 +52,18 @@ def get_weather(region):
         #location_id = response["location"][0]["id"]
         location_tz = response["location"][0]["tz"]
     region_tz = "https://geoapi.qweather.com/v2/city/lookup?location={}&key={}".format(location_tz, key)
-    response1 = get(region_tz, headers=headers).json()
-    if response1["code"] == "404":
+    response = get(region_tz, headers=headers).json()
+    if response["code"] == "404":
         print("推送消息失败，请检查地区名是否有误！")
         os.system("pause")
         sys.exit(1)
-    elif response1["code"] == "401":
+    elif response["code"] == "401":
         print("推送消息失败，请检查和风天气key是否正确！")
         os.system("pause")
         sys.exit(1)
     else:
         # 获取地区的location--id
-        location_id = response1["location"][0]["id"]
+        location_id = response["location"][0]["id"]
     weather_url = "https://devapi.qweather.com/v7/weather/3d?location={}&key={}".format(location_id,key)
     response = get(weather_url, headers=headers).json()
     # 天气 textDay
