@@ -50,23 +50,38 @@ def get_weather(region):
     else:
         # 获取地区的location--id
         location_id = response["location"][0]["id"]
-    weather_url = "https://devapi.qweather.com/v7/weather/now?location={}&key={}".format(location_id, key)
+    weather_url = "https://api.qweather.com/v7/weather/3d?location={}&key={}".format(location_id, key)
     response = get(weather_url, headers=headers).json()
-    # 天气
-    weather = response["now"]["text"]
-    # 当前温度
-    temp = response["now"]["temp"] + u"\N{DEGREE SIGN}" + "C"
+    # 天气 textDay
+    weather = response["daily"][0]["textDay"]
+
     # 体感温度
-    feelsLike = response["now"]["feelsLike"] + u"\N{DEGREE SIGN}" + "C"
-    # 能见度
-    vis = response["now"]["vis"]+ "Km"
-    # 风向
-    wind_dir = response["now"]["windDir"]
-    #当前小时累计降水量，默认单位：毫米
-    precip = response["now"]["precip"]+ "毫米"
+    #feelsLike = response["daily"][0]["feelsLike"] + u"\N{DEGREE SIGN}" + "C"
+
+    # 能见度 daily.vis
+    vis = response["daily"][0]["vis"]+ "公里"
+
+    # 风向 windDirDay
+    wind_dir = response["daily"][0]["windDirDay"]
+    #daily.precip 预报当天总降水量，默认单位：毫米
+    precip = response["daily"][0]["precip"]+ "毫米"
+
     #大气压强，默认单位：百帕
-    pressure = response["now"]["pressure"] + "百帕"
-    return weather, temp, feelsLike, vis, precip, wind_dir, pressure
+    #pressure = response["daily"][0]["pressure"] + "百帕"
+
+    #日升
+    sunrise = response["daily"][0]["sunrise"]
+    #日落
+    sunset = response["daily"][0]["sunset"]
+    #最高气温
+    tempmax = response["daily"][0]["tempMax"]
+    #最低气温
+    tempmin = response["daily"][0]["tempMin"]
+    #daily.uvIndex 紫外线强度指数
+    uvIndex = response["daily"][0]["uvIndex"]
+
+
+    return weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset
 
  
  
@@ -124,7 +139,7 @@ def get_ciba():
     return note_ch, note_en
  
                 # note_ch, note_en
-def send_message(to_user, access_token, region_name, weather, temp, feelsLike, vis, precip, wind_dir, pressure,):
+def send_message(to_user, access_token, region_name,weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
@@ -162,14 +177,6 @@ def send_message(to_user, access_token, region_name, weather, temp, feelsLike, v
                 "value": weather,
                 "color": get_color()
             },
-            "temp": {
-                "value": temp,
-                "color": get_color()
-            },
-            "feelsLike": {
-                "value": feelsLike,
-                "color": get_color()
-            },
             "vis": {
                 "value": vis,
                 "color": get_color()
@@ -181,12 +188,28 @@ def send_message(to_user, access_token, region_name, weather, temp, feelsLike, v
             "wind_dir": {
                 "value": wind_dir,
                 "color": get_color()
-
             },
-            "pressure": {
-                "value": pressure,
+            "tempmax": {
+                "value": tempmax,
                 "color": get_color()
             },
+             "tempmin": {
+                "value": tempmin,
+                "color": get_color()
+            },
+            "uvIndex": {
+                "value": uvIndex,
+                "color": get_color()
+            },
+            "sunrise": {
+                "value": sunrise,
+                "color": get_color()
+            },
+            "sunset": {
+                "value": sunset,
+                "color": get_color()
+            },
+
             "love_day": {
                 "value": love_days,
                 "color": get_color()
@@ -249,7 +272,7 @@ if __name__ == "__main__":
     users = config["user"]
     # 传入地区获取天气信息
     region = config["region"]
-    weather, temp, feelsLike, vis, precip, wind_dir, pressure = get_weather(region)
+    weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset = get_weather(region)
     note_ch = config["note_ch"]
     note_en = config["note_en"]
     if note_ch == "" and note_en == "":
@@ -258,6 +281,6 @@ if __name__ == "__main__":
 
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, region, weather, temp, feelsLike, vis, precip, wind_dir, pressure,) #note_ch, note_en
+        send_message(user, accessToken, region, weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset) #note_ch, note_en
     os.system("pause")
 
