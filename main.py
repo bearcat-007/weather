@@ -288,6 +288,6 @@ if __name__ == "__main__":
 
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, region, weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset,location_tz,note_ch, note_en)
+        send_message(user, accessToken, region, weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset,note_ch, note_en)
     os.system("pause")
 
