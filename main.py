@@ -88,7 +88,7 @@ def get_weather(region):
     uvIndex = response["daily"][0]["uvIndex"]
 
 
-    return weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset
+    return weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset,location_tz
 
  
  
@@ -146,7 +146,7 @@ def get_ciba():
     return note_ch, note_en
  
                 # note_ch, note_en
-def send_message(to_user, access_token, region_name,weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset):
+def send_message(to_user, access_token, location_tz,weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
@@ -177,7 +177,7 @@ def send_message(to_user, access_token, region_name,weather,vis,precip,wind_dir,
                 "color": get_color()
             },
             "region": {
-                "value": region_name,
+                "value": location_tz,
                 "color": get_color()
             },
             "weather": {
@@ -279,7 +279,7 @@ if __name__ == "__main__":
     users = config["user"]
     # 传入地区获取天气信息
     region = config["region"]
-    weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset = get_weather(region)
+    weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset,location_tz = get_weather(region)
     note_ch = config["note_ch"]
     note_en = config["note_en"]
     if note_ch == "" and note_en == "":
@@ -288,6 +288,6 @@ if __name__ == "__main__":
 
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, region, weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset) #note_ch, note_en
+        send_message(user, accessToken, region, weather,vis,precip,wind_dir,tempmax,tempmin,uvIndex,sunrise,sunset,location_tz,note_ch, note_en)
     os.system("pause")
 
